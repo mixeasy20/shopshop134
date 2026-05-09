@@ -29,12 +29,10 @@ document.getElementById("logout-btn").addEventListener("click", async (e) => {
 // 2. Tab Navigation
 // ========================
 function switchTab(targetId) {
-    // อัปเดตแถบเมนู (Navbar)
     document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
     const activeNav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
     if (activeNav) activeNav.classList.add("active");
 
-    // อัปเดตเนื้อหา (Content)
     document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.remove("active"));
     document.getElementById(targetId).classList.add("active");
 }
@@ -71,6 +69,7 @@ document.getElementById("add-item-form").addEventListener("submit", async (e) =>
         e.target.reset();
         document.getElementById("item-date").valueAsDate = new Date();
     } catch (err) {
+        console.error(err);
         showToast("❌ เกิดข้อผิดพลาด กรุณาลองใหม่");
     }
 });
@@ -79,17 +78,24 @@ document.getElementById("add-item-form").addEventListener("submit", async (e) =>
 // 4. Data Loading
 // ========================
 function loadData() {
+    // แก้ไข: เอา orderBy ออกก่อนเพื่อป้องกันปัญหาเรื่อง Index ใน Firebase
     db.collection("purchases")
         .where("userId", "==", currentUser.uid)
-        .orderBy("date", "desc")
         .onSnapshot((snapshot) => {
             allExpenses = [];
             snapshot.forEach((doc) => {
                 allExpenses.push({ id: doc.id, ...doc.data() });
             });
+            
+            // เรียงข้อมูลในเครื่องแทน (เรียงตามวันที่ล่าสุดขึ้นก่อน)
+            allExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
             renderHistory(allExpenses);
             updateStats(allExpenses);
             renderCharts();
+        }, (error) => {
+            console.error("Error loading data:", error);
+            document.getElementById("history-list").innerHTML = '<p class="error-msg">❌ โหลดข้อมูลไม่สำเร็จ กรุณาเช็ค Firestore Rules</p>';
         });
 }
 
@@ -206,19 +212,16 @@ async function loadProfile() {
         selectedAvatar = avatar;
         highlightAvatar(avatar);
     } else {
-        // ถ้ายังไม่มีข้อมูล Profile แสดงว่าเป็นผู้ใช้ใหม่
         isNewProfile = true;
     }
-    
     document.getElementById("profile-avatar-display").innerText = avatar;
     document.getElementById("profile-name-display").innerText = name;
     document.getElementById("hero-username").innerText = name;
     document.getElementById("profile-display-name").value = name;
 
-    // ถ้าเพิ่งสมัครหรือยังไม่เคยเซฟโปรไฟล์ ให้เด้งไปหน้าโปรไฟล์ก่อน
     if (isNewProfile) {
         switchTab("tab-profile");
-        showToast("👋 ยินดีต้อนรับ! กรุณาตั้งชื่อและเลือกรูปโปรไฟล์ก่อนครับ");
+        showToast("👋 ยินดีต้อนรับ! กรุณาตั้งชื่อและเลือกอวตาร์ก่อนครับ");
     }
 }
 
@@ -233,8 +236,6 @@ document.getElementById("profile-form").onsubmit = async (e) => {
         }, { merge: true });
         showToast("✅ บันทึกโปรไฟล์สำเร็จ!");
         loadProfile();
-        
-        // เมื่อบันทึกเสร็จ ให้เด้งกลับไปหน้า เพิ่มรายการ
         switchTab("tab-add");
     } catch (err) {
         showToast("❌ เกิดข้อผิดพลาด");
