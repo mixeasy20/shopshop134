@@ -1,79 +1,100 @@
-// script.js — Main App Logic for PHP Version
-let currentUserEmail = "";
+// script.js — Main App Logic (Firebase compat CDN)
+let currentUser = null;
 let allExpenses = [];
 let selectedAvatar = "👤";
 let expenseChartInstance = null;
 let categoryChartInstance = null;
 
 // ========================
-// 1. Check Auth & Load Data
+// 1. Auth State
 // ========================
-async function initApp() {
-    try {
-        const resp = await fetch('api_profile.php?action=load');
-        const user = await resp.json();
-        
-        if (!user || user.error) {
-            window.location.href = "login.php";
-            return;
-        }
-
-        currentUserEmail = user.email;
-        document.getElementById("item-date").valueAsDate = new Date();
-
-        renderProfile(user);
-        loadData();
-    } catch (err) {
-        window.location.href = "login.php";
+auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+        return;
     }
-}
+    currentUser = user;
+    document.getElementById("item-date").valueAsDate = new Date();
+    await loadProfile();
+    loadData();
+});
 
-async function loadData() {
-    const resp = await fetch('api_expenses.php?action=list');
-    allExpenses = await resp.json();
-    renderHistory(allExpenses);
-    updateStats(allExpenses);
-    renderCharts();
-}
-
-initApp();
-
-// Logout
 document.getElementById("logout-btn").addEventListener("click", async (e) => {
     e.preventDefault();
-    await fetch('auth_api.php?action=logout');
-    window.location.href = "login.php";
+    await auth.signOut();
+    window.location.href = "login.html";
 });
 
 // ========================
-// 2. Add Item
+// 2. Tab Navigation
+// ========================
+function switchTab(targetId) {
+    // อัปเดตแถบเมนู (Navbar)
+    document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
+    const activeNav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+    if (activeNav) activeNav.classList.add("active");
+
+    // อัปเดตเนื้อหา (Content)
+    document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.remove("active"));
+    document.getElementById(targetId).classList.add("active");
+}
+
+document.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = item.getAttribute("data-target");
+        switchTab(target);
+    });
+});
+
+// ========================
+// 3. Add Item
 // ========================
 document.getElementById("add-item-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('name', document.getElementById("item-name").value);
-    formData.append('price', document.getElementById("item-price").value);
-    formData.append('category', document.getElementById("item-category").value);
-    formData.append('date', document.getElementById("item-date").value);
+    const name = document.getElementById("item-name").value;
+    const price = parseFloat(document.getElementById("item-price").value);
+    const category = document.getElementById("item-category").value;
+    const date = document.getElementById("item-date").value;
 
-    const resp = await fetch('api_expenses.php?action=add', {
-        method: 'POST',
-        body: formData
-    });
-    const res = await resp.json();
-
-    if (res.success) {
-        showToast("✨ บันทึกสำเร็จ!");
+    try {
+        await db.collection("purchases").add({
+            userId: currentUser.uid,
+            name,
+            price,
+            category,
+            date,
+            isFavorite: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast("✨ บันทึกรายการสำเร็จ!");
         e.target.reset();
         document.getElementById("item-date").valueAsDate = new Date();
-        loadData();
-    } else {
-        showToast("❌ " + res.message);
+    } catch (err) {
+        showToast("❌ เกิดข้อผิดพลาด กรุณาลองใหม่");
     }
 });
 
 // ========================
-// 3. Render History
+// 4. Data Loading
+// ========================
+function loadData() {
+    db.collection("purchases")
+        .where("userId", "==", currentUser.uid)
+        .orderBy("date", "desc")
+        .onSnapshot((snapshot) => {
+            allExpenses = [];
+            snapshot.forEach((doc) => {
+                allExpenses.push({ id: doc.id, ...doc.data() });
+            });
+            renderHistory(allExpenses);
+            updateStats(allExpenses);
+            renderCharts();
+        });
+}
+
+// ========================
+// 5. Render History
 // ========================
 let viewMode = "list";
 
@@ -85,10 +106,10 @@ function renderHistory(items) {
 
     let filtered = items;
     if (filterCat !== "all") filtered = filtered.filter(i => i.category === filterCat);
-    if (filterFav) filtered = filtered.filter(i => i.is_favorite);
+    if (filterFav) filtered = filtered.filter(i => i.isFavorite);
 
     if (filtered.length === 0) {
-        historyList.innerHTML = '<p class="loading-text">ไม่มีรายการที่ตรงกับเงื่อนไข 🔍</p>';
+        historyList.innerHTML = '<p class="loading-text">ไม่มีรายการ 🔍</p>';
         return;
     }
 
@@ -103,12 +124,11 @@ function renderListView(filtered, container) {
 
 function renderGroupedView(filtered, container) {
     const groups = {};
-    filtered.forEach(item => {
-        const cat = item.category || "อื่นๆ";
+    filtered.forEach(i => {
+        const cat = i.category || "อื่นๆ";
         if (!groups[cat]) groups[cat] = [];
-        groups[cat].push(item);
+        groups[cat].push(i);
     });
-
     const catMap = { "อาหาร": "🍔", "ของใช้": "🧴", "เครื่องดื่ม": "☕", "เสื้อผ้า": "👔", "อื่นๆ": "📦" };
     for (const [cat, items] of Object.entries(groups)) {
         const total = items.reduce((sum, i) => sum + i.price, 0);
@@ -116,7 +136,7 @@ function renderGroupedView(filtered, container) {
         header.className = "group-header";
         header.innerHTML = `<div class="group-title">${catMap[cat]||"📦"} ${cat}</div><div class="group-meta"><span>${items.length} รายการ</span><strong>฿${total.toLocaleString()}</strong></div>`;
         container.appendChild(header);
-        items.forEach(item => container.appendChild(createHistoryItemEl(item)));
+        items.forEach(i => container.appendChild(createHistoryItemEl(i)));
     }
     attachItemButtons(container);
 }
@@ -124,14 +144,13 @@ function renderGroupedView(filtered, container) {
 function createHistoryItemEl(item) {
     const div = document.createElement("div");
     div.className = "history-item";
-    const favIcon = item.is_favorite ? "⭐" : "☆";
-    const favClass = item.is_favorite ? "active" : "";
+    const favIcon = item.isFavorite ? "⭐" : "☆";
+    const favClass = item.isFavorite ? "active" : "";
     const catMap = { "อาหาร": "🍔", "ของใช้": "🧴", "เครื่องดื่ม": "☕", "เสื้อผ้า": "👔", "อื่นๆ": "📦" };
-    
     div.innerHTML = `
         <div class="item-info">
             <span class="item-name">${catMap[item.category]||"📦"} ${item.name}</span>
-            <span class="item-date">${formatDate(item.date)} · ${item.category}</span>
+            <span class="item-date">${formatDate(item.date)}</span>
         </div>
         <div class="item-right">
             <span class="item-price">฿${item.price.toLocaleString()}</span>
@@ -142,146 +161,86 @@ function createHistoryItemEl(item) {
 }
 
 function attachItemButtons(container) {
-    container.querySelectorAll(".btn-fav").forEach(btn => btn.addEventListener("click", toggleFavorite));
-    container.querySelectorAll(".btn-delete").forEach(btn => btn.addEventListener("click", deleteItem));
+    container.querySelectorAll(".btn-fav").forEach(b => b.onclick = toggleFavorite);
+    container.querySelectorAll(".btn-delete").forEach(b => b.onclick = deleteItem);
 }
 
 async function toggleFavorite(e) {
-    const btn = e.currentTarget;
-    const id = btn.dataset.id;
-    const isNowFav = !btn.classList.contains("active");
-    
-    const formData = new FormData();
-    formData.append('id', id);
-    formData.append('is_favorite', isNowFav);
-    
-    await fetch('api_expenses.php?action=toggle_fav', { method: 'POST', body: formData });
-    loadData();
+    const id = e.currentTarget.dataset.id;
+    const isFav = !e.currentTarget.classList.contains("active");
+    await db.collection("purchases").doc(id).update({ isFavorite: isFav });
 }
 
 async function deleteItem(e) {
-    if(!confirm("ลบรายการนี้ใช่ไหม?")) return;
-    const formData = new FormData();
-    formData.append('id', e.currentTarget.dataset.id);
-    await fetch('api_expenses.php?action=delete', { method: 'POST', body: formData });
-    loadData();
+    if (!confirm("ลบรายการนี้?")) return;
+    await db.collection("purchases").doc(e.currentTarget.dataset.id).delete();
 }
 
-document.getElementById("clear-all-btn").addEventListener("click", async () => {
-    if(!confirm("ล้างทั้งหมดใช่ไหม?")) return;
-    await fetch('api_expenses.php?action=clear_all');
-    loadData();
-});
+document.getElementById("clear-all-btn").onclick = async () => {
+    if (!confirm("ล้างทั้งหมด?")) return;
+    const batch = db.batch();
+    allExpenses.forEach(i => batch.delete(db.collection("purchases").doc(i.id)));
+    await batch.commit();
+};
 
-// View mode toggle
-document.getElementById("view-list-btn").addEventListener("click", () => { viewMode = "list"; renderHistory(allExpenses); });
-document.getElementById("view-group-btn").addEventListener("click", () => { viewMode = "group"; renderHistory(allExpenses); });
-document.getElementById("filter-category").addEventListener("change", () => renderHistory(allExpenses));
-document.getElementById("filter-fav").addEventListener("change", () => renderHistory(allExpenses));
+document.getElementById("view-list-btn").onclick = () => { viewMode = "list"; renderHistory(allExpenses); };
+document.getElementById("view-group-btn").onclick = () => { viewMode = "group"; renderHistory(allExpenses); };
+document.getElementById("filter-category").onchange = () => renderHistory(allExpenses);
+document.getElementById("filter-fav").onchange = () => renderHistory(allExpenses);
 
 // ========================
-// 4. Profile & Photo
+// 6. Profile
 // ========================
-let pendingPhotoFile = null;
-
-function renderProfile(user) {
-    document.getElementById("profile-email-display").innerText = user.email;
-    const created = new Date(user.created_at);
-    document.getElementById("profile-since").innerText = `สมาชิกตั้งแต่: ${created.getDate()}/${created.getMonth()+1}/${created.getFullYear()}`;
+async function loadProfile() {
+    const snap = await db.collection("profiles").doc(currentUser.uid).get();
+    const email = currentUser.email;
+    document.getElementById("profile-email-display").innerText = email;
     
-    const name = user.display_name || user.email.split("@")[0];
+    let name = email.split("@")[0], avatar = "👤";
+    let isNewProfile = false;
+
+    if (snap.exists) {
+        const data = snap.data();
+        name = data.displayName || name;
+        avatar = data.avatar || "👤";
+        selectedAvatar = avatar;
+        highlightAvatar(avatar);
+    } else {
+        // ถ้ายังไม่มีข้อมูล Profile แสดงว่าเป็นผู้ใช้ใหม่
+        isNewProfile = true;
+    }
+    
+    document.getElementById("profile-avatar-display").innerText = avatar;
     document.getElementById("profile-name-display").innerText = name;
     document.getElementById("hero-username").innerText = name;
-    document.getElementById("profile-display-name").value = user.display_name || "";
-    
-    selectedAvatar = user.avatar_emoji || "👤";
-    highlightAvatar(selectedAvatar);
+    document.getElementById("profile-display-name").value = name;
 
-    if (user.profile_photo) {
-        showProfilePhoto(user.profile_photo);
-    } else {
-        hideProfilePhoto();
+    // ถ้าเพิ่งสมัครหรือยังไม่เคยเซฟโปรไฟล์ ให้เด้งไปหน้าโปรไฟล์ก่อน
+    if (isNewProfile) {
+        switchTab("tab-profile");
+        showToast("👋 ยินดีต้อนรับ! กรุณาตั้งชื่อและเลือกรูปโปรไฟล์ก่อนครับ");
     }
 }
-
-function showProfilePhoto(url) {
-    const photoDisplay = document.getElementById("profile-photo-display");
-    const avatarDisplay = document.getElementById("profile-avatar-display");
-    const preview = document.getElementById("photo-preview");
-    const placeholder = document.getElementById("photo-placeholder");
-    
-    photoDisplay.src = url;
-    photoDisplay.style.display = "block";
-    avatarDisplay.style.display = "none";
-    
-    preview.src = url;
-    preview.style.display = "block";
-    placeholder.style.display = "none";
-    document.getElementById("photo-actions").style.display = "flex";
-}
-
-function hideProfilePhoto() {
-    document.getElementById("profile-photo-display").style.display = "none";
-    document.getElementById("profile-avatar-display").style.display = "flex";
-    document.getElementById("profile-avatar-display").innerText = selectedAvatar;
-    document.getElementById("photo-preview").style.display = "none";
-    document.getElementById("photo-placeholder").style.display = "flex";
-    document.getElementById("photo-actions").style.display = "none";
-    pendingPhotoFile = null;
-}
-
-// Photo Input Handlers
-const uploadArea = document.getElementById("photo-upload-area");
-const photoInput = document.getElementById("photo-input");
-uploadArea.onclick = () => photoInput.click();
-photoInput.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        pendingPhotoFile = file;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            document.getElementById("photo-preview").src = ev.target.result;
-            document.getElementById("photo-preview").style.display = "block";
-            document.getElementById("photo-placeholder").style.display = "none";
-            document.getElementById("photo-actions").style.display = "flex";
-        };
-        reader.readAsDataURL(file);
-    }
-};
-
-document.getElementById("remove-photo-btn").onclick = () => {
-    hideProfilePhoto();
-    showToast("📷 รูปถูกเลือกให้ออกแล้ว (กดบันทึกเพื่อยืนยัน)");
-};
 
 document.getElementById("profile-form").onsubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('displayName', document.getElementById("profile-display-name").value);
-    formData.append('avatar', selectedAvatar);
-    
-    if (pendingPhotoFile) {
-        formData.append('photo', pendingPhotoFile);
-    }
-    
-    if (document.getElementById("photo-preview").style.display === "none") {
-        formData.append('removePhoto', 'true');
-    }
-
-    const resp = await fetch('api_profile.php?action=update', {
-        method: 'POST',
-        body: formData
-    });
-    const res = await resp.json();
-    if(res.success) {
+    const name = document.getElementById("profile-display-name").value.trim();
+    try {
+        await db.collection("profiles").doc(currentUser.uid).set({
+            displayName: name,
+            avatar: selectedAvatar,
+            userId: currentUser.uid
+        }, { merge: true });
         showToast("✅ บันทึกโปรไฟล์สำเร็จ!");
-        if (res.photoURL) showProfilePhoto(res.photoURL);
-        else hideProfilePhoto();
-        initApp();
+        loadProfile();
+        
+        // เมื่อบันทึกเสร็จ ให้เด้งกลับไปหน้า เพิ่มรายการ
+        switchTab("tab-add");
+    } catch (err) {
+        showToast("❌ เกิดข้อผิดพลาด");
     }
 };
 
-// Avatar Picker logic
 document.querySelectorAll(".avatar-option").forEach(opt => {
     opt.onclick = () => {
         document.querySelectorAll(".avatar-option").forEach(o => o.classList.remove("selected"));
@@ -291,72 +250,40 @@ document.querySelectorAll(".avatar-option").forEach(opt => {
     };
 });
 function highlightAvatar(emoji) {
-    document.querySelectorAll(".avatar-option").forEach(opt => {
-        opt.classList.toggle("selected", opt.dataset.emoji === emoji);
-    });
+    document.querySelectorAll(".avatar-option").forEach(opt => opt.classList.toggle("selected", opt.dataset.emoji === emoji));
 }
 
 // ========================
-// 5. Helper & Charts
+// 7. Helpers & Charts
 // ========================
 function showToast(msg) {
-    const toast = document.getElementById("toast");
-    toast.innerText = msg;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2800);
+    const t = document.getElementById("toast");
+    t.innerText = msg; t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2800);
 }
-
-function formatDate(dateStr) {
-    if (!dateStr) return "";
-    const [y, m, d] = dateStr.split("-");
-    return `${d}/${m}/${y}`;
-}
-
+function formatDate(s) { if(!s) return ""; const [y,m,d] = s.split("-"); return `${d}/${m}/${y}`; }
 function updateStats(items) {
-    const currentMonth = new Date().toISOString().slice(0, 7);
+    const month = new Date().toISOString().slice(0, 7);
     let total = 0, count = 0, favs = 0;
     items.forEach(i => {
-        if (i.date.startsWith(currentMonth)) { total += i.price; count++; }
-        if (i.is_favorite) favs++;
+        if (i.date.startsWith(month)) { total += i.price; count++; }
+        if (i.isFavorite) favs++;
     });
     document.getElementById("monthly-total").innerText = `฿${total.toLocaleString()}`;
-    document.getElementById("monthly-count").innerText = `${count} รายการ`;
-    document.getElementById("fav-count").innerText = `${favs} รายการ`;
+    document.getElementById("monthly-count").innerText = count;
+    document.getElementById("fav-count").innerText = favs;
 }
-
-// Charts
-function renderCharts() {
-    renderBarChart();
-    renderCategoryChart();
-}
-
+function renderCharts() { renderBarChart(); renderCategoryChart(); }
 function renderBarChart() {
     const ctx = document.getElementById("expenseChart").getContext("2d");
-    const byDate = {};
-    allExpenses.forEach(i => { byDate[i.date] = (byDate[i.date]||0) + i.price; });
-    const labels = Object.keys(byDate).sort().slice(-14);
+    const byD = {}; allExpenses.forEach(i => byD[i.date] = (byD[i.date]||0) + i.price);
+    const labs = Object.keys(byD).sort().slice(-14);
     if (expenseChartInstance) expenseChartInstance.destroy();
-    expenseChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels.map(formatDate),
-            datasets: [{ label: '฿', data: labels.map(d => byDate[d]), backgroundColor: '#7c3aed80' }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-    });
+    expenseChartInstance = new Chart(ctx, { type: 'bar', data: { labels: labs.map(formatDate), datasets: [{ label: '฿', data: labs.map(d => byD[d]), backgroundColor: '#7c3aed80' }] }, options: { responsive: true, maintainAspectRatio: false } });
 }
-
 function renderCategoryChart() {
     const ctx = document.getElementById("categoryChart").getContext("2d");
-    const byCat = {};
-    allExpenses.forEach(i => { byCat[i.category] = (byCat[i.category]||0) + i.price; });
+    const byC = {}; allExpenses.forEach(i => byC[i.category] = (byC[i.category]||0) + i.price);
     if (categoryChartInstance) categoryChartInstance.destroy();
-    categoryChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(byCat),
-            datasets: [{ data: Object.values(byCat), backgroundColor: ['#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6'] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-    });
+    categoryChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(byC), datasets: [{ data: Object.values(byC), backgroundColor: ['#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6'] }] }, options: { responsive: true, maintainAspectRatio: false } });
 }
