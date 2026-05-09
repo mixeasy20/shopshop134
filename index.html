@@ -133,7 +133,13 @@
                 </div>
             </div>
             <div class="card slide-in" style="margin-top:20px;">
-                <h2>กราฟค่าใช้จ่ายรายวัน 📊</h2>
+                <div class="history-header" style="margin-bottom:12px;">
+                    <h2 style="margin:0;">กราฟค่าใช้จ่าย 📊</h2>
+                    <select id="chart-view-mode" style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-family:inherit; font-size:13px;">
+                        <option value="daily">รายวัน (14 วันล่าสุด)</option>
+                        <option value="monthly">รายเดือน (ปีนี้)</option>
+                    </select>
+                </div>
                 <div class="chart-container"><canvas id="expenseChart"></canvas></div>
             </div>
             <div class="card slide-in" style="margin-top:20px;">

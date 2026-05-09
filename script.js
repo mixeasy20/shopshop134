@@ -277,10 +277,49 @@ function updateStats(items) {
 function renderCharts() { renderBarChart(); renderCategoryChart(); }
 function renderBarChart() {
     const ctx = document.getElementById("expenseChart").getContext("2d");
-    const byD = {}; allExpenses.forEach(i => byD[i.date] = (byD[i.date]||0) + i.price);
-    const labs = Object.keys(byD).sort().slice(-14);
+    const mode = document.getElementById("chart-view-mode")?.value || "daily";
+    
+    let labels = [];
+    let data = [];
+    
+    if (mode === "daily") {
+        const byD = {}; 
+        allExpenses.forEach(i => byD[i.date] = (byD[i.date]||0) + i.price);
+        const sortedDates = Object.keys(byD).sort().slice(-14);
+        labels = sortedDates.map(formatDate);
+        data = sortedDates.map(d => byD[d]);
+    } else {
+        const byM = {};
+        const currentYear = new Date().getFullYear().toString();
+        allExpenses.forEach(i => {
+            if (i.date.startsWith(currentYear)) {
+                const month = i.date.substring(0, 7); // YYYY-MM
+                byM[month] = (byM[month]||0) + i.price;
+            }
+        });
+        const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+        const sortedMonths = Object.keys(byM).sort();
+        labels = sortedMonths.map(m => {
+            const mIndex = parseInt(m.split("-")[1]) - 1;
+            return monthNames[mIndex] || m;
+        });
+        data = sortedMonths.map(m => byM[m]);
+    }
+
     if (expenseChartInstance) expenseChartInstance.destroy();
-    expenseChartInstance = new Chart(ctx, { type: 'bar', data: { labels: labs.map(formatDate), datasets: [{ label: '฿', data: labs.map(d => byD[d]), backgroundColor: '#7c3aed80' }] }, options: { responsive: true, maintainAspectRatio: false } });
+    expenseChartInstance = new Chart(ctx, { 
+        type: 'bar', 
+        data: { 
+            labels: labels, 
+            datasets: [{ label: '฿', data: data, backgroundColor: '#7c3aed80', borderRadius: 4 }] 
+        }, 
+        options: { responsive: true, maintainAspectRatio: false } 
+    });
+}
+
+// ผูก Event Listener เมื่อเปลี่ยนโหมดกราฟ
+if (document.getElementById("chart-view-mode")) {
+    document.getElementById("chart-view-mode").addEventListener("change", renderBarChart);
 }
 function renderCategoryChart() {
     const ctx = document.getElementById("categoryChart").getContext("2d");
