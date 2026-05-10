@@ -392,7 +392,7 @@ function renderBarChart() {
         const sortedDates = Object.keys(byD).sort().slice(-14);
         labels = sortedDates.map(formatDate);
         data = sortedDates.map(d => byD[d]);
-    } else {
+    } else if (mode === "monthly") {
         const byM = {};
         const currentYear = new Date().getFullYear().toString();
         allExpenses.forEach(i => {
@@ -408,6 +408,15 @@ function renderBarChart() {
             return monthNames[mIndex] || m;
         });
         data = sortedMonths.map(m => byM[m]);
+    } else if (mode === "yearly") {
+        const byY = {};
+        allExpenses.forEach(i => {
+            const year = i.date.substring(0, 4);
+            byY[year] = (byY[year]||0) + i.price;
+        });
+        const sortedYears = Object.keys(byY).sort().slice(-5);
+        labels = sortedYears.map(y => parseInt(y) + 543); // Convert to Buddhist Year for Thai users
+        data = sortedYears.map(y => byY[y]);
     }
 
     const style = getComputedStyle(document.documentElement);
