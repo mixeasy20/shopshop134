@@ -107,10 +107,12 @@ let viewMode = "list";
 function renderHistory(items) {
     const filterCat = document.getElementById("filter-category").value;
     const filterFav = document.getElementById("filter-fav").checked;
+    const searchQuery = document.getElementById("search-input") ? document.getElementById("search-input").value.toLowerCase() : "";
     const historyList = document.getElementById("history-list");
     historyList.innerHTML = "";
 
     let filtered = items;
+    if (searchQuery) filtered = filtered.filter(i => i.name.toLowerCase().includes(searchQuery));
     if (filterCat !== "all") filtered = filtered.filter(i => i.category === filterCat);
     if (filterFav) filtered = filtered.filter(i => i.isFavorite);
 
@@ -242,24 +244,66 @@ async function loadProfile() {
     const profileSince = document.getElementById("profile-since");
     if (profileSince) profileSince.innerText = `สมาชิกตั้งแต่: ${memberSinceStr}`;
 
+    // Load Budget from profile
+    if (snap.exists && snap.data().monthlyBudget) {
+        const budget = snap.data().monthlyBudget;
+        document.getElementById("profile-budget").value = budget;
+        userBudget = budget; // Global variable
+    } else {
+        userBudget = 0;
+    }
+    updateBudgetDisplay();
+
     if (isNewProfile) {
         switchTab("tab-profile");
         showToast("👋 ยินดีต้อนรับ! กรุณาตั้งชื่อและเลือกอวตาร์ก่อนครับ");
+    }
+}
+let userBudget = 0;
+
+function updateBudgetDisplay() {
+    const month = new Date().toISOString().slice(0, 7);
+    const totalSpent = allExpenses.filter(i => i.date.startsWith(month)).reduce((sum, i) => sum + i.price, 0);
+    
+    const spentEl = document.getElementById("budget-spent-text");
+    const barEl = document.getElementById("budget-progress-bar");
+    const remainingEl = document.getElementById("budget-remaining-text");
+
+    if (spentEl && barEl && remainingEl) {
+        spentEl.innerText = `ใช้ไป ฿${totalSpent.toLocaleString()} / งบ ฿${userBudget.toLocaleString()}`;
+        
+        const remaining = Math.max(0, userBudget - totalSpent);
+        remainingEl.innerText = `คงเหลือ: ฿${remaining.toLocaleString()}`;
+
+        if (userBudget > 0) {
+            const percent = Math.min(100, (totalSpent / userBudget) * 100);
+            barEl.style.width = `${percent}%`;
+            
+            // Change color based on percentage
+            if (percent > 90) barEl.style.background = "linear-gradient(90deg, #ef4444, #f87171)";
+            else if (percent > 70) barEl.style.background = "linear-gradient(90deg, #f59e0b, #fbbf24)";
+            else barEl.style.background = "linear-gradient(90deg, #10b981, #3b82f6)";
+        } else {
+            barEl.style.width = "0%";
+        }
     }
 }
 
 document.getElementById("profile-form").onsubmit = async (e) => {
     e.preventDefault();
     const name = document.getElementById("profile-display-name").value.trim();
+    const budget = parseFloat(document.getElementById("profile-budget").value) || 0;
     try {
         await db.collection("profiles").doc(currentUser.uid).set({
             displayName: name,
             avatar: selectedAvatar,
+            monthlyBudget: budget,
             userId: currentUser.uid
         }, { merge: true });
         showToast("✅ บันทึกโปรไฟล์สำเร็จ!");
+        userBudget = budget;
         loadProfile();
-        switchTab("tab-add");
+        switchTab("tab-home");
     } catch (err) {
         showToast("❌ เกิดข้อผิดพลาด");
     }
@@ -311,6 +355,7 @@ function updateStats(items) {
     document.getElementById("monthly-total").innerText = `฿${total.toLocaleString()}`;
     document.getElementById("monthly-count").innerText = count;
     document.getElementById("fav-count").innerText = favs;
+    updateBudgetDisplay();
 }
 function renderCharts() { renderBarChart(); renderCategoryChart(); }
 function renderBarChart() {
@@ -416,4 +461,39 @@ function renderCategoryChart() {
             cutout: '70%'
         } 
     });
+}
+
+// ========================
+// 8. Search & Export
+// ========================
+const searchInput = document.getElementById("search-input");
+if (searchInput) {
+    searchInput.addEventListener("input", () => renderHistory(allExpenses));
+}
+
+const exportBtn = document.getElementById("export-csv-btn");
+if (exportBtn) {
+    exportBtn.onclick = () => {
+        if (allExpenses.length === 0) {
+            showToast("❌ ไม่มีข้อมูลให้ส่งออก");
+            return;
+        }
+        let csv = "\uFEFF"; // UTF-8 BOM for Thai support in Excel
+        csv += "วันที่,ชื่อรายการ,หมวดหมู่,ราคา (บาท),รายการโปรด\n";
+        
+        allExpenses.forEach(i => {
+            const nameClean = i.name.replace(/,/g, ''); 
+            csv += `${i.date},${nameClean},${i.category},${i.price},${i.isFavorite ? 'ใช่' : 'ไม่ใช่'}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Shopshop_Data_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("📥 ส่งออกไฟล์เรียบร้อย!");
+    };
 }
