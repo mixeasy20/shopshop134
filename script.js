@@ -189,8 +189,18 @@ document.getElementById("clear-all-btn").onclick = async () => {
     await batch.commit();
 };
 
-document.getElementById("view-list-btn").onclick = () => { viewMode = "list"; renderHistory(allExpenses); };
-document.getElementById("view-group-btn").onclick = () => { viewMode = "group"; renderHistory(allExpenses); };
+document.getElementById("view-list-btn").onclick = () => { 
+    viewMode = "list"; 
+    document.getElementById("view-list-btn").classList.add("active");
+    document.getElementById("view-group-btn").classList.remove("active");
+    renderHistory(allExpenses); 
+};
+document.getElementById("view-group-btn").onclick = () => { 
+    viewMode = "group"; 
+    document.getElementById("view-group-btn").classList.add("active");
+    document.getElementById("view-list-btn").classList.remove("active");
+    renderHistory(allExpenses); 
+};
 document.getElementById("filter-category").onchange = () => renderHistory(allExpenses);
 document.getElementById("filter-fav").onchange = () => renderHistory(allExpenses);
 
