@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
 </head>
+
 <body>
 
     <!-- Floating Blobs -->
@@ -20,7 +22,7 @@
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="nav-brand">🥧 shopshop134 🍦</div>
+        <div class="nav-brand"> ShopShop134 </div>
         <ul class="nav-links">
             <li><a href="#" class="nav-item active" data-target="tab-add">➕ เพิ่มรายการ</a></li>
             <li><a href="#" class="nav-item" data-target="tab-history">📋 ประวัติ</a></li>
@@ -39,7 +41,8 @@
                     <h1>สวัสดี, <span id="hero-username">เพื่อน</span>! 👋</h1>
                     <p>บันทึกของที่ซื้อวันนี้ไว้เพื่ออนาคตที่ดีกว่านะ 🛒</p>
                 </div>
-                <img src="hero_shopping.png" alt="Shopping Illustration" class="hero-img" onerror="this.style.display='none'">
+                <img src="hero_shopping.png" alt="Shopping Illustration" class="hero-img"
+                    onerror="this.style.display='none'">
             </div>
             <div class="card slide-in">
                 <h2>จดบันทึกรายการสิ่งของ 📝</h2>
@@ -139,7 +142,8 @@
             <div class="card slide-in" style="margin-top:20px;">
                 <div class="history-header" style="margin-bottom:12px;">
                     <h2 style="margin:0;">กราฟค่าใช้จ่าย 📊</h2>
-                    <select id="chart-view-mode" style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-family:inherit; font-size:13px;">
+                    <select id="chart-view-mode"
+                        style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-family:inherit; font-size:13px;">
                         <option value="daily">รายวัน (14 วันล่าสุด)</option>
                         <option value="monthly">รายเดือน (ปีนี้)</option>
                     </select>
@@ -191,7 +195,7 @@
                         <label for="profile-display-name">ชื่อที่แสดง</label>
                         <input type="text" id="profile-display-name" placeholder="ชื่อของคุณ">
                     </div>
-                    
+
                     <div class="input-group" style="margin-top:16px;">
                         <label for="theme-select">🎨 เลือกธีม (Theme)</label>
                         <select id="theme-select">
@@ -220,4 +224,5 @@
     <script src="firebase-init.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
