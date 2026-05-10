@@ -136,11 +136,7 @@
                         <div class="input-group">
                             <label for="item-category">หมวดหมู่</label>
                             <select id="item-category">
-                                <option value="อาหาร">🍔 อาหาร</option>
-                                <option value="ของใช้">🧴 ของใช้</option>
-                                <option value="เครื่องดื่ม">☕ เครื่องดื่ม</option>
-                                <option value="เสื้อผ้า">👔 เสื้อผ้า</option>
-                                <option value="อื่นๆ" selected>📦 อื่นๆ</option>
+                                <!-- Dynamic Categories -->
                             </select>
                         </div>
                     </div>
@@ -165,11 +161,7 @@
                         <input type="text" id="search-input" placeholder="🔍 ค้นหาชื่อ..." style="padding:4px 8px; border-radius:6px; border:1px solid var(--border-light); font-family:inherit; font-size:13px; background:var(--input-bg); color:var(--text-main); max-width: 120px;">
                         <select id="filter-category">
                             <option value="all">ทั้งหมด</option>
-                            <option value="อาหาร">🍔 อาหาร</option>
-                            <option value="ของใช้">🧴 ของใช้</option>
-                            <option value="เครื่องดื่ม">☕ เครื่องดื่ม</option>
-                            <option value="เสื้อผ้า">👔 เสื้อผ้า</option>
-                            <option value="อื่นๆ">📦 อื่นๆ</option>
+                            <!-- Dynamic Categories -->
                         </select>
                         <label class="fav-filter-label">
                             <input type="checkbox" id="filter-fav"> ⭐ รายการโปรดเท่านั้น
@@ -290,6 +282,18 @@
 
                     <button type="submit" class="btn btn-glow" style="margin-top: 16px;">💾 บันทึกการตั้งค่า</button>
                 </form>
+            </div>
+
+            <div class="card slide-in" style="margin-top:24px;">
+                <h2>จัดการหมวดหมู่ 📂</h2>
+                <p class="subtitle">เพิ่มหรือลบหมวดหมู่ของคุณเอง</p>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <input type="text" id="new-category-input" placeholder="เช่น 🍿 ขนม" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-light); background: var(--input-bg); color: var(--text-main); font-family: inherit;">
+                    <button id="add-category-btn" class="btn btn-glow" style="width: auto; padding: 0 20px;">เพิ่ม</button>
+                </div>
+                <div id="category-list-manager" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- List of categories with delete buttons -->
+                </div>
             </div>
         </section>
 

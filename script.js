@@ -2,6 +2,7 @@
 let currentUser = null;
 let allExpenses = [];
 let selectedAvatar = "👤";
+let userCategories = ['🍔 อาหาร', '🧴 ของใช้', '☕ เครื่องดื่ม', '👔 เสื้อผ้า', '📦 อื่นๆ'];
 let expenseChartInstance = null;
 let categoryChartInstance = null;
 
@@ -137,12 +138,16 @@ function renderGroupedView(filtered, container) {
         if (!groups[cat]) groups[cat] = [];
         groups[cat].push(i);
     });
-    const catMap = { "อาหาร": "🍔", "ของใช้": "🧴", "เครื่องดื่ม": "☕", "เสื้อผ้า": "👔", "อื่นๆ": "📦" };
+    
     for (const [cat, items] of Object.entries(groups)) {
         const total = items.reduce((sum, i) => sum + i.price, 0);
         const header = document.createElement("div");
         header.className = "group-header";
-        header.innerHTML = `<div class="group-title">${catMap[cat]||"📦"} ${cat}</div><div class="group-meta"><span>${items.length} รายการ</span><strong>฿${total.toLocaleString()}</strong></div>`;
+        
+        // Use a generic icon if the category string doesn't look like it has an emoji
+        const displayCat = (cat.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|\u200d|\u2705|\u2b50|\u2728/) || cat.length > 20) ? cat : `📁 ${cat}`;
+
+        header.innerHTML = `<div class="group-title">${displayCat}</div><div class="group-meta"><span>${items.length} รายการ</span><strong>฿${total.toLocaleString()}</strong></div>`;
         container.appendChild(header);
         items.forEach(i => container.appendChild(createHistoryItemEl(i)));
     }
@@ -154,11 +159,14 @@ function createHistoryItemEl(item) {
     div.className = "history-item";
     const favIcon = item.isFavorite ? "⭐" : "☆";
     const favClass = item.isFavorite ? "active" : "";
-    const catMap = { "อาหาร": "🍔", "ของใช้": "🧴", "เครื่องดื่ม": "☕", "เสื้อผ้า": "👔", "อื่นๆ": "📦" };
+    
+    const cat = item.category || "อื่นๆ";
+    const displayCatName = (cat.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|\u200d|\u2705|\u2b50|\u2728/) || cat.length > 20) ? item.name : `📁 ${item.name}`;
+
     div.innerHTML = `
         <div class="item-info">
-            <span class="item-name">${catMap[item.category]||"📦"} ${item.name}</span>
-            <span class="item-date">${formatDate(item.date)}</span>
+            <span class="item-name">${displayCatName}</span>
+            <span class="item-date">${formatDate(item.date)} <small>• ${cat}</small></span>
         </div>
         <div class="item-right">
             <span class="item-price">฿${item.price.toLocaleString()}</span>
@@ -260,6 +268,13 @@ async function loadProfile() {
     }
     updateBudgetDisplay();
 
+    // Load Categories from profile
+    if (snap.exists && snap.data().categories && snap.data().categories.length > 0) {
+        userCategories = snap.data().categories;
+    }
+    renderCategoryOptions();
+    renderCategoryManager();
+
     if (isNewProfile) {
         switchTab("tab-profile");
         showToast("👋 ยินดีต้อนรับ! กรุณาตั้งชื่อและเลือกอวตาร์ก่อนครับ");
@@ -329,6 +344,71 @@ if (saveBudgetBtn) {
         }
     };
 }
+
+// Category Management
+function renderCategoryOptions() {
+    const itemSelect = document.getElementById("item-category");
+    const filterSelect = document.getElementById("filter-category");
+    
+    // Backup current filter selection
+    const currentFilter = filterSelect.value;
+
+    const optionsHTML = userCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+    
+    itemSelect.innerHTML = optionsHTML;
+    filterSelect.innerHTML = `<option value="all">ทั้งหมด</option>` + optionsHTML;
+    
+    // Restore filter selection if it still exists
+    if (userCategories.includes(currentFilter)) filterSelect.value = currentFilter;
+}
+
+function renderCategoryManager() {
+    const list = document.getElementById("category-list-manager");
+    if (!list) return;
+    
+    list.innerHTML = userCategories.map((cat, index) => `
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 10px;">
+            <span style="font-size: 14px;">${cat}</span>
+            <button onclick="deleteCategory(${index})" style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; opacity: 0.6;">🗑️ ลบ</button>
+        </div>
+    `).join('');
+}
+
+async function saveCategories() {
+    try {
+        await db.collection("profiles").doc(currentUser.uid).set({
+            categories: userCategories
+        }, { merge: true });
+        renderCategoryOptions();
+        renderCategoryManager();
+        showToast("📂 อัปเดตหมวดหมู่แล้ว");
+    } catch (err) {
+        showToast("❌ เกิดข้อผิดพลาดในการบันทึก");
+    }
+}
+
+document.getElementById("add-category-btn").onclick = () => {
+    const input = document.getElementById("new-category-input");
+    const val = input.value.trim();
+    if (!val) return;
+    if (userCategories.includes(val)) {
+        showToast("⚠️ มีหมวดหมู่นี้อยู่แล้ว");
+        return;
+    }
+    userCategories.push(val);
+    input.value = "";
+    saveCategories();
+};
+
+window.deleteCategory = (index) => {
+    if (userCategories.length <= 1) {
+        showToast("⚠️ ต้องมีอย่างน้อย 1 หมวดหมู่");
+        return;
+    }
+    if (!confirm(`ลบหมวดหมู่ "${userCategories[index]}"?`)) return;
+    userCategories.splice(index, 1);
+    saveCategories();
+};
 
 document.querySelectorAll(".avatar-option").forEach(opt => {
     opt.onclick = () => {
