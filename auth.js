@@ -24,7 +24,8 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
         await auth.signInWithEmailAndPassword(email, password);
         window.location.href = "index.html";
     } catch (err) {
-        document.getElementById("login-error").innerText = "❌ เข้าสู่ระบบไม่สำเร็จ";
+        console.error("Login error:", err);
+        document.getElementById("login-error").innerText = "❌ เข้าสู่ระบบไม่สำเร็จ: " + (err.message || "เกิดข้อผิดพลาด");
     }
 });
 
@@ -43,7 +44,8 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
         await auth.createUserWithEmailAndPassword(email, password);
         window.location.href = "index.html";
     } catch (err) {
-        document.getElementById("register-error").innerText = "❌ สมัครสมาชิกไม่สำเร็จ";
+        console.error("Register error:", err);
+        document.getElementById("register-error").innerText = "❌ สมัครสมาชิกไม่สำเร็จ: " + (err.message || "เกิดข้อผิดพลาด");
     }
 });
 
@@ -54,6 +56,7 @@ document.getElementById("google-btn").addEventListener("click", async () => {
         await auth.signInWithPopup(provider);
         window.location.href = "index.html";
     } catch (err) {
-        document.getElementById("google-error").innerText = "❌ Google Sign-In ไม่สำเร็จ";
+        console.error("Google Sign-In error:", err);
+        document.getElementById("google-error").innerText = "❌ Google Sign-In ไม่สำเร็จ: " + (err.message || "เกิดข้อผิดพลาด");
     }
 });

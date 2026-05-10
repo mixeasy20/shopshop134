@@ -254,6 +254,20 @@ function highlightAvatar(emoji) {
     document.querySelectorAll(".avatar-option").forEach(opt => opt.classList.toggle("selected", opt.dataset.emoji === emoji));
 }
 
+// Theme Switcher Logic
+const themeSelect = document.getElementById("theme-select");
+if (themeSelect) {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    themeSelect.value = savedTheme;
+
+    themeSelect.addEventListener("change", (e) => {
+        const selectedTheme = e.target.value;
+        document.documentElement.setAttribute('data-theme', selectedTheme);
+        localStorage.setItem('theme', selectedTheme);
+        showToast("🎨 เปลี่ยนธีมเรียบร้อย!");
+    });
+}
+
 // ========================
 // 7. Helpers & Charts
 // ========================

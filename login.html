@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ - shopshop134 🥧</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
+
 <body>
 
     <div class="blob blob-1"></div>
@@ -14,7 +20,7 @@
 
     <div class="login-container">
         <div class="login-card">
-            <div class="login-logo">🥧</div>
+            <div class="login-logo">🍟</div>
             <h1 class="login-brand">shopshop134</h1>
             <p class="login-tagline">จดบันทึกรายการสิ่งของของคุณ 📕</p>
 
@@ -64,7 +70,10 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
     <script src="firebase-init.js"></script>
     <script src="auth.js"></script>
 </body>
+
 </html>

@@ -6,6 +6,10 @@
     <title>shopshop134 - Expense Tracker 🥧</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
 <body>
 
@@ -187,7 +191,19 @@
                         <label for="profile-display-name">ชื่อที่แสดง</label>
                         <input type="text" id="profile-display-name" placeholder="ชื่อของคุณ">
                     </div>
-                    <button type="submit" class="btn btn-glow">💾 บันทึกโปรไฟล์</button>
+                    
+                    <div class="input-group" style="margin-top:16px;">
+                        <label for="theme-select">🎨 เลือกธีม (Theme)</label>
+                        <select id="theme-select">
+                            <option value="light">สว่าง (Light)</option>
+                            <option value="dark">มืด (Dark)</option>
+                            <option value="monokai">Monokai</option>
+                            <option value="cool-blue">Cool Blue</option>
+                            <option value="dark-ocean">Dark Ocean</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-glow" style="margin-top: 16px;">💾 บันทึกการตั้งค่า</button>
                 </form>
             </div>
         </section>
