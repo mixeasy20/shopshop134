@@ -247,7 +247,7 @@ async function loadProfile() {
     // Load Budget from profile
     if (snap.exists && snap.data().monthlyBudget) {
         const budget = snap.data().monthlyBudget;
-        document.getElementById("profile-budget").value = budget;
+        document.getElementById("home-budget-input").value = budget;
         userBudget = budget; // Global variable
     } else {
         userBudget = 0;
@@ -292,22 +292,37 @@ function updateBudgetDisplay() {
 document.getElementById("profile-form").onsubmit = async (e) => {
     e.preventDefault();
     const name = document.getElementById("profile-display-name").value.trim();
-    const budget = parseFloat(document.getElementById("profile-budget").value) || 0;
     try {
         await db.collection("profiles").doc(currentUser.uid).set({
             displayName: name,
             avatar: selectedAvatar,
-            monthlyBudget: budget,
             userId: currentUser.uid
         }, { merge: true });
         showToast("✅ บันทึกโปรไฟล์สำเร็จ!");
-        userBudget = budget;
         loadProfile();
-        switchTab("tab-home");
+        switchTab("tab-add");
     } catch (err) {
         showToast("❌ เกิดข้อผิดพลาด");
     }
 };
+
+// Save Budget from Home Tab
+const saveBudgetBtn = document.getElementById("save-budget-btn");
+if (saveBudgetBtn) {
+    saveBudgetBtn.onclick = async () => {
+        const budget = parseFloat(document.getElementById("home-budget-input").value) || 0;
+        try {
+            await db.collection("profiles").doc(currentUser.uid).set({
+                monthlyBudget: budget
+            }, { merge: true });
+            userBudget = budget;
+            updateBudgetDisplay();
+            showToast("💰 ตั้งงบประมาณสำเร็จ!");
+        } catch (err) {
+            showToast("❌ เกิดข้อผิดพลาด");
+        }
+    };
+}
 
 document.querySelectorAll(".avatar-option").forEach(opt => {
     opt.onclick = () => {
