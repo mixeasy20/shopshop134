@@ -265,6 +265,7 @@ if (themeSelect) {
         document.documentElement.setAttribute('data-theme', selectedTheme);
         localStorage.setItem('theme', selectedTheme);
         showToast("🎨 เปลี่ยนธีมเรียบร้อย!");
+        if (typeof renderCharts === 'function') renderCharts();
     });
 }
 
@@ -320,14 +321,38 @@ function renderBarChart() {
         data = sortedMonths.map(m => byM[m]);
     }
 
+    const style = getComputedStyle(document.documentElement);
+    const primary = style.getPropertyValue('--primary').trim() || '#7c3aed';
+    const textColor = style.getPropertyValue('--text-muted').trim() || '#6b7280';
+    const gridColor = style.getPropertyValue('--border-light').trim() || 'rgba(0,0,0,0.1)';
+
+    Chart.defaults.color = textColor;
+
     if (expenseChartInstance) expenseChartInstance.destroy();
     expenseChartInstance = new Chart(ctx, { 
         type: 'bar', 
         data: { 
             labels: labels, 
-            datasets: [{ label: '฿', data: data, backgroundColor: '#7c3aed80', borderRadius: 4 }] 
+            datasets: [{ 
+                label: '฿', 
+                data: data, 
+                backgroundColor: primary + 'b3', // 70% opacity
+                hoverBackgroundColor: primary,
+                borderRadius: 6,
+                borderSkipped: false
+            }] 
         }, 
-        options: { responsive: true, maintainAspectRatio: false } 
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            scales: {
+                x: { grid: { color: gridColor, display: false } },
+                y: { grid: { color: gridColor, borderDash: [4, 4] }, beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        } 
     });
 }
 
@@ -338,6 +363,34 @@ if (document.getElementById("chart-view-mode")) {
 function renderCategoryChart() {
     const ctx = document.getElementById("categoryChart").getContext("2d");
     const byC = {}; allExpenses.forEach(i => byC[i.category] = (byC[i.category]||0) + i.price);
+    const style = getComputedStyle(document.documentElement);
+    const c1 = style.getPropertyValue('--primary').trim() || '#7c3aed';
+    const c2 = style.getPropertyValue('--secondary').trim() || '#ec4899';
+    const c3 = style.getPropertyValue('--accent').trim() || '#f59e0b';
+    const c4 = style.getPropertyValue('--success').trim() || '#10b981';
+    const c5 = style.getPropertyValue('--primary-hover').trim() || '#3b82f6';
+    const borderColor = style.getPropertyValue('--glass-bg').trim() || '#ffffff';
+
     if (categoryChartInstance) categoryChartInstance.destroy();
-    categoryChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(byC), datasets: [{ data: Object.values(byC), backgroundColor: ['#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+    categoryChartInstance = new Chart(ctx, { 
+        type: 'doughnut', 
+        data: { 
+            labels: Object.keys(byC), 
+            datasets: [{ 
+                data: Object.values(byC), 
+                backgroundColor: [c1, c2, c3, c4, c5],
+                borderColor: borderColor,
+                borderWidth: 2,
+                hoverOffset: 4
+            }] 
+        }, 
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' }
+            },
+            cutout: '70%'
+        } 
+    });
 }
