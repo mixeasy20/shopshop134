@@ -1263,13 +1263,22 @@ input:-webkit-autofill:active{
 @media (max-width: 768px) {
     /* Navbar to Bottom Nav */
     .navbar {
-        padding: 12px 20px;
-        justify-content: center;
-        box-shadow: none;
+        padding: 14px 24px;
+        justify-content: space-between;
+        background: var(--glass-bg);
+        border-bottom: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-sm);
     }
     
     .nav-brand {
-        font-size: 20px;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    
+    .nav-logo {
+        width: 32px;
+        height: 32px;
     }
     
     .nav-links {
@@ -1279,15 +1288,16 @@ input:-webkit-autofill:active{
         right: 0;
         width: 100%;
         background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         border-top: 1px solid var(--glass-border);
-        padding: 8px 10px;
-        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 6px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
         display: flex;
         justify-content: space-around;
+        align-items: center;
         z-index: 1000;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
         flex-wrap: nowrap;
     }
     
@@ -1301,24 +1311,32 @@ input:-webkit-autofill:active{
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
-        font-size: 10px;
-        padding: 6px 2px;
-        border-radius: 12px;
+        gap: 6px;
+        font-size: 11.5px;
+        font-weight: 500;
+        padding: 8px 4px;
+        border-radius: 16px;
         width: 100%;
+        max-width: 70px;
         text-align: center;
         white-space: nowrap;
         background: transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--text-muted);
     }
     
     .nav-links a.active {
-        background: rgba(124, 58, 237, 0.1);
+        background: rgba(124, 58, 237, 0.12);
         color: var(--primary);
-        box-shadow: none;
+        transform: translateY(-2px);
+    }
+
+    .nav-links a i, .nav-links a span {
+        font-size: 18px; /* Bigger emojis/icons */
     }
 
     .nav-btn-logout {
-        border: none !important;
+        display: none !important; /* Already moved to profile */
     }
 
     /* Layout */
