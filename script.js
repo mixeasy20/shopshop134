@@ -229,6 +229,12 @@ async function loadProfile() {
     document.getElementById("profile-avatar-display").innerText = avatar;
     document.getElementById("profile-name-display").innerText = name;
     
+    // Update Home tab profile card
+    const homeAvatar = document.getElementById("home-avatar-icon");
+    if (homeAvatar) homeAvatar.innerText = avatar;
+    const homeUserText = document.getElementById("home-username-text");
+    if (homeUserText) homeUserText.innerText = name;
+
     // Update Home and Profile specific elements if they exist
     const heroUsername = document.getElementById("hero-username");
     if (heroUsername) heroUsername.innerText = name;
