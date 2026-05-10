@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - shopshop134 🥧</title>
+    <title>เข้าสู่ระบบ - shopshop 🥧</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#7c3aed">
@@ -22,8 +22,8 @@
 
     <div class="login-container">
         <div class="login-card">
-            <div class="login-logo">🍟</div>
-            <h1 class="login-brand">shopshop134</h1>
+            <div class="login-logo"><img src="icon-512.png" alt="Logo" class="logo"></div>
+            <h1 class="login-brand">shopshop</h1>
             <p class="login-tagline">จดบันทึกรายการสิ่งของของคุณ 📕</p>
 
             <div class="auth-tabs">
@@ -40,7 +40,8 @@
                     <label for="login-password">🔒 รหัสผ่าน</label>
                     <div class="password-wrapper">
                         <input type="password" id="login-password" placeholder="••••••••" required>
-                        <button type="button" class="btn-toggle-password" onclick="togglePassword('login-password', this)">👁️</button>
+                        <button type="button" class="btn-toggle-password"
+                            onclick="togglePassword('login-password', this)">👁️</button>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-glow">🚀 เข้าสู่ระบบ</button>
@@ -56,14 +57,16 @@
                     <label for="reg-password">🔒 รหัสผ่าน (อย่างน้อย 6 ตัว)</label>
                     <div class="password-wrapper">
                         <input type="password" id="reg-password" placeholder="••••••••" required>
-                        <button type="button" class="btn-toggle-password" onclick="togglePassword('reg-password', this)">👁️</button>
+                        <button type="button" class="btn-toggle-password"
+                            onclick="togglePassword('reg-password', this)">👁️</button>
                     </div>
                 </div>
                 <div class="input-group">
                     <label for="reg-confirm">🔒 ยืนยันรหัสผ่าน</label>
                     <div class="password-wrapper">
                         <input type="password" id="reg-confirm" placeholder="••••••••" required>
-                        <button type="button" class="btn-toggle-password" onclick="togglePassword('reg-confirm', this)">👁️</button>
+                        <button type="button" class="btn-toggle-password"
+                            onclick="togglePassword('reg-confirm', this)">👁️</button>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-glow">✨ สมัครสมาชิก</button>
@@ -107,4 +110,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -216,8 +216,21 @@ async function loadProfile() {
     }
     document.getElementById("profile-avatar-display").innerText = avatar;
     document.getElementById("profile-name-display").innerText = name;
-    document.getElementById("hero-username").innerText = name;
+    
+    // Update Home and Profile specific elements if they exist
+    const heroUsername = document.getElementById("hero-username");
+    if (heroUsername) heroUsername.innerText = name;
+    
     document.getElementById("profile-display-name").value = name;
+
+    const creationTime = currentUser.metadata.creationTime;
+    const memberSinceStr = creationTime ? new Date(creationTime).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : "-";
+    
+    const homeSince = document.getElementById("home-member-since");
+    if (homeSince) homeSince.innerText = memberSinceStr;
+
+    const profileSince = document.getElementById("profile-since");
+    if (profileSince) profileSince.innerText = `สมาชิกตั้งแต่: ${memberSinceStr}`;
 
     if (isNewProfile) {
         switchTab("tab-profile");

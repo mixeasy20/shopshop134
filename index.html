@@ -24,9 +24,12 @@
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="nav-brand"> ShopShop134 </div>
+        <div class="nav-brand">
+            <img src="icon-512.png" alt="Logo" class="nav-logo"> shopshop
+        </div>
         <ul class="nav-links">
-            <li><a href="#" class="nav-item active" data-target="tab-add">➕ เพิ่มรายการ</a></li>
+            <li><a href="#" class="nav-item active" data-target="tab-home">🏠 หน้าหลัก</a></li>
+            <li><a href="#" class="nav-item" data-target="tab-add">➕ เพิ่มรายการ</a></li>
             <li><a href="#" class="nav-item" data-target="tab-history">📋 ประวัติ</a></li>
             <li><a href="#" class="nav-item" data-target="tab-dashboard">📊 สรุปรายเดือน</a></li>
             <li><a href="#" class="nav-item" data-target="tab-profile">👤 โปรไฟล์</a></li>
@@ -36,16 +39,41 @@
 
     <main class="app-container">
 
-        <!-- TAB 1: Add Item -->
-        <section id="tab-add" class="tab-content active">
+        <!-- TAB 0: Home (หน้าหลัก) -->
+        <section id="tab-home" class="tab-content active">
             <div class="hero-section slide-in">
                 <div class="hero-text">
                     <h1>สวัสดี, <span id="hero-username">เพื่อน</span>! 👋</h1>
-                    <p>บันทึกของที่ซื้อวันนี้ไว้เพื่ออนาคตที่ดีกว่านะ 🛒</p>
+                    <p>ยินดีต้อนรับกลับมา! เริ่มบันทึกรายจ่ายวันนี้กันเลย 🛒</p>
                 </div>
                 <img src="hero_shopping.png" alt="Shopping Illustration" class="hero-img"
                     onerror="this.style.display='none'">
             </div>
+
+            <div class="stats-grid slide-in" style="margin-top: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon">🌟</div>
+                    <div class="stat-info">
+                        <h3>เป็นสมาชิกตั้งแต่</h3>
+                        <p id="home-member-since" class="stat-value" style="font-size:18px;">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card slide-in" style="margin-top: 24px;">
+                <h2>📢 ข่าวสาร & อัปเดต</h2>
+                <div style="margin-top: 16px; border-left: 4px solid var(--primary); padding-left: 16px;">
+                    <h3 style="margin: 0 0 8px; font-size: 16px;">🎉 เวอร์ชันใหม่มาแล้ว!</h3>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 14px;">
+                        อัปเดตใหม่มาพร้อมกับฟีเจอร์ Progressive Web App (PWA) ให้คุณติดตั้งแอปนี้ลงบนหน้าจอมือถือได้โดยตรง!
+                        และเพิ่มธีมสีใหม่ (Cool Blue, Dark Ocean) พร้อมรองรับการแสดงผลบนมือถืออย่างเต็มรูปแบบ
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 1: Add Item -->
+        <section id="tab-add" class="tab-content">
             <div class="card slide-in">
                 <h2>จดบันทึกรายการสิ่งของ 📝</h2>
                 <p class="subtitle">กรอกข้อมูลสิ่งที่คุณซื้อวันนี้</p>
