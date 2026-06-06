@@ -1,6 +1,6 @@
 {
-  "name": "shopshop134 Expense Tracker",
-  "short_name": "shopshop134",
+  "name": "shopshop Expense Tracker",
+  "short_name": "shopshop",
   "description": "Premium expense tracker to manage your daily spending.",
   "start_url": "/index.html",
   "display": "standalone",

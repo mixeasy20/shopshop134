@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shopshop134-v2';
+const CACHE_NAME = 'shopshop-v14';
 const ASSETS = [
   '/',
   '/index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   '/style.css',
   '/script.js',
   '/auth.js',
+  '/i18n.js',
   '/firebase-init.js',
   '/firebase.js',
   '/icon-512.png',

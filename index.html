@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>shopshop134 - Expense Tracker 🥧</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>shopshop - Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#7c3aed">
@@ -28,12 +29,21 @@
             <img src="icon-512.png" alt="Logo" class="nav-logo"> shopshop
         </div>
         <ul class="nav-links">
-            <li><a href="#" class="nav-item active" data-target="tab-home">🏠 หน้าหลัก</a></li>
-            <li><a href="#" class="nav-item" data-target="tab-add">➕ เพิ่มรายการ</a></li>
-            <li><a href="#" class="nav-item" data-target="tab-history">📋 ประวัติ</a></li>
-            <li><a href="#" class="nav-item" data-target="tab-dashboard">📊 สรุปรายเดือน</a></li>
-            <li><a href="#" class="nav-item" data-target="tab-profile">👤 โปรไฟล์</a></li>
+            <li><a href="#" class="nav-item active" data-target="tab-home"><span data-i18n="nav_home"><i
+                            class="fa-solid fa-house"></i> หน้าหลัก</span></a></li>
+            <li><a href="#" class="nav-item" data-target="tab-add"><span data-i18n="nav_add"><i
+                            class="fa-solid fa-circle-plus"></i> เพิ่มรายการ</span></a></li>
+            <li><a href="#" class="nav-item" data-target="tab-history"><span data-i18n="nav_history"><i
+                            class="fa-solid fa-clock-rotate-left"></i> ประวัติ</span></a></li>
+            <li><a href="#" class="nav-item" data-target="tab-dashboard"><span data-i18n="nav_dashboard"><i
+                            class="fa-solid fa-chart-pie"></i> สรุปรายเดือน</span></a></li>
+            <li><a href="#" class="nav-item" data-target="tab-profile"><span data-i18n="nav_profile"><i
+                            class="fa-solid fa-user"></i> โปรไฟล์</span></a></li>
         </ul>
+        <div class="lang-switcher">
+            <button class="lang-btn" id="lang-th" onclick="changeLanguage('th')">TH</button>
+            <button class="lang-btn" id="lang-en" onclick="changeLanguage('en')">EN</button>
+        </div>
     </nav>
 
     <main class="app-container">
@@ -42,8 +52,9 @@
         <section id="tab-home" class="tab-content active">
             <div class="hero-section slide-in">
                 <div class="hero-text">
-                    <h1>สวัสดี, <span id="hero-username">เพื่อน</span>! 👋</h1>
-                    <p>ยินดีต้อนรับกลับมา! เริ่มบันทึกรายจ่ายวันนี้กันเลย 🛒</p>
+                    <h1 data-i18n="hero_title">สวัสดี, <i class="fa-regular fa-hand-spock"></i></h1>
+                    <p data-i18n="hero_subtitle">ยินดีต้อนรับกลับมา! เริ่มบันทึกรายจ่ายวันนี้กันเลย <i
+                            class="fa-solid fa-cart-shopping"></i></p>
                 </div>
                 <img src="hero_shopping.png" alt="Shopping Illustration" class="hero-img"
                     onerror="this.style.display='none'">
@@ -51,27 +62,29 @@
 
             <div class="stats-grid slide-in" style="margin-top: 24px;">
                 <div class="stat-card">
-                    <div class="stat-icon">🌟</div>
+                    <div class="stat-icon"><i class="fa-solid fa-star" style="color: var(--accent);"></i></div>
                     <div class="stat-info">
-                        <h3>เป็นสมาชิกตั้งแต่</h3>
+                        <h3 data-i18n="stat_member_since">เป็นสมาชิกตั้งแต่</h3>
                         <p id="home-member-since" class="stat-value" style="font-size:16px;">-</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">⚙️</div>
+                    <div class="stat-icon"><i class="fa-solid fa-wallet" style="color: var(--primary);"></i></div>
                     <div class="stat-info">
-                        <h3>งบประมาณรายเดือน</h3>
+                        <h3 data-i18n="stat_monthly_budget">งบประมาณรายเดือน</h3>
                         <div style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                            <input type="number" id="home-budget-input" placeholder="0" 
+                            <input type="number" id="home-budget-input" placeholder="0"
                                 style="width: 70px; padding: 6px; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 13px; background: var(--input-bg); color: var(--text-main);">
-                            <button id="save-budget-btn" style="background: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: inherit; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">บันทึก</button>
+                            <button id="save-budget-btn" data-i18n="btn_save"
+                                style="background: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: inherit; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">บันทึก</button>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" id="home-avatar-icon">👤</div>
+                    <div class="stat-icon" id="home-avatar-icon"><i class="fa-solid fa-user"
+                            style="color: var(--secondary);"></i></div>
                     <div class="stat-info">
-                        <h3>โปรไฟล์</h3>
+                        <h3 data-i18n="stat_profile">โปรไฟล์</h3>
                         <p id="home-username-text" class="stat-value" style="font-size:16px;">-</p>
                     </div>
                 </div>
@@ -79,20 +92,28 @@
 
             <div class="card slide-in" style="margin-top: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
-                    <h2 style="margin: 0;">งบประมาณเดือนนี้ 💸</h2>
-                    <span id="budget-remaining-text" style="font-size: 14px; font-weight: 600; color: var(--text-muted);">คงเหลือ: ฿0</span>
+                    <h2 style="margin: 0;" data-i18n="budget_this_month">งบประมาณเดือนนี้ <i class="fa-solid fa-coins"
+                            style="color: var(--accent);"></i></h2>
+                    <span id="budget-remaining-text" data-i18n="budget_remaining"
+                        style="font-size: 14px; font-weight: 600; color: var(--text-muted);">คงเหลือ: ฿0</span>
                 </div>
-                <div style="width: 100%; height: 12px; background: rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; margin-top: 12px;">
-                    <div id="budget-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #3b82f6); transition: width 0.5s, background 0.5s;"></div>
+                <div
+                    style="width: 100%; height: 12px; background: rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; margin-top: 12px;">
+                    <div id="budget-progress-bar"
+                        style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #3b82f6); transition: width 0.5s, background 0.5s;">
+                    </div>
                 </div>
-                <p id="budget-spent-text" style="margin: 8px 0 0; font-size: 12px; color: var(--text-muted); text-align: right;">ใช้ไป ฿0 / งบ ฿0</p>
+                <p id="budget-spent-text"
+                    style="margin: 8px 0 0; font-size: 12px; color: var(--text-muted); text-align: right;">ใช้ไป ฿0 / งบ
+                    ฿0</p>
             </div>
 
             <div class="card slide-in" style="margin-top: 24px;">
-                <h2>📢 ข่าวสาร & อัปเดต</h2>
+                <h2 data-i18n="news_title"><i class="fa-solid fa-bullhorn"></i> ข่าวสาร & อัปเดต</h2>
                 <div style="margin-top: 16px; border-left: 4px solid var(--primary); padding-left: 16px;">
-                    <h3 style="margin: 0 0 8px; font-size: 16px;">🎉 ประกาศจากผู้พัฒนา</h3>
-                    <p style="margin: 0; color: var(--text-muted); font-size: 14px;">
+                    <h3 style="margin: 0 0 8px; font-size: 16px;" data-i18n="news_dev_title"><i
+                            class="fa-solid fa-circle-info"></i> ประกาศจากผู้พัฒนา</h3>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 14px;" data-i18n="news_dev_desc">
                         เริ่มบันทึกรายจ่ายได้เลย สวัสดีครับทุกคน
                         ผมได้ทำเจ้าเว็บไซต์นี้ขึ้นมาเพื่อช่วยสำหรับคนที่อยากบันทึกค่าใช้จ่ายต่างนะครับ
                         ก็เจอปัญหาอะไรสามารถติดต่อได้ที่
@@ -109,10 +130,41 @@
                         </a>
                         <a href="mailto:thmickth20@gmail.com"
                             style="text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                            ✉️ Email thmickth20@gmail.com
+                            <i class="fa-solid fa-envelope"></i> Email thmickth20@gmail.com
                         </a>
                     </div>
                     </p>
+                </div>
+            </div>
+
+            <!-- วิธีใช้ -->
+            <div class="card slide-in" style="margin-top: 24px;">
+                <h2 data-i18n="guide_title"><i class="fa-solid fa-lightbulb" style="color: var(--accent);"></i>
+                    วิธีใช้งานแอปเบื้องต้น</h2>
+                <p class="subtitle" data-i18n="guide_subtitle">ทำตามขั้นตอนง่ายๆ เพื่อเริ่มจัดการการเงินของคุณ</p>
+                <div class="guide-grid">
+                    <div class="guide-step">
+                        <div class="guide-icon"><i class="fa-solid fa-circle-plus"></i>
+                        </div>
+                        <h4 data-i18n="guide_step1_title">เพิ่มรายการ</h4>
+                        <p data-i18n="guide_step1_desc">บันทึกรายจ่ายของคุณได้ง่ายๆ เพียงกรอกชื่อและราคา</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="guide-icon"><i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h4 data-i18n="guide_step2_title">ดูสรุปรายเดือน</h4>
+                        <p data-i18n="guide_step2_desc">ตรวจสอบสถิติและกราฟเพื่อดูว่าคุณใช้เงินไปกับอะไรบ้าง</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="guide-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <h4 data-i18n="guide_step3_title">ตั้งงบประมาณ</h4>
+                        <p data-i18n="guide_step3_desc">กำหนดงบต่อเดือนเพื่อควบคุมการใช้จ่ายไม่ให้เกินตัว</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="guide-icon"><i class="fa-solid fa-palette"></i></div>
+                        <h4 data-i18n="guide_step4_title">ปรับแต่งโปรไฟล์</h4>
+                        <p data-i18n="guide_step4_desc">เปลี่ยนอวตาร์และธีมสีที่ชอบได้ในหน้าโปรไฟล์</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -120,30 +172,37 @@
         <!-- TAB 1: Add Item -->
         <section id="tab-add" class="tab-content">
             <div class="card slide-in">
-                <h2>จดบันทึกรายการสิ่งของ 📝</h2>
-                <p class="subtitle">กรอกข้อมูลสิ่งที่คุณซื้อวันนี้</p>
+                <h2 data-i18n="add_title">จดบันทึกรายการสิ่งของ <i class="fa-solid fa-pen-to-square"></i></h2>
+                <p class="subtitle" data-i18n="add_subtitle">กรอกข้อมูลสิ่งที่คุณซื้อวันนี้</p>
                 <form id="add-item-form">
                     <div class="input-group">
-                        <label for="item-name">ชื่อสิ่งของ</label>
+                        <label for="item-name" data-i18n="label_item_name">ชื่อสิ่งของ</label>
                         <input type="text" id="item-name" placeholder="เช่น น้ำยาล้างจาน, ทิชชู่" required>
                     </div>
                     <div class="form-row">
                         <div class="input-group">
-                            <label for="item-price">ราคา (บาท)</label>
+                            <label for="item-price" data-i18n="label_price">ราคา (บาท)</label>
                             <input type="number" id="item-price" placeholder="0.00" step="0.01" required>
                         </div>
                         <div class="input-group">
-                            <label for="item-category">หมวดหมู่</label>
+                            <label for="item-category" data-i18n="label_category">หมวดหมู่</label>
                             <select id="item-category">
                                 <!-- Dynamic Categories -->
                             </select>
                         </div>
                     </div>
                     <div class="input-group">
-                        <label for="item-date">วันที่ซื้อ</label>
+                        <label for="item-date" data-i18n="label_date">วันที่ซื้อ</label>
                         <input type="date" id="item-date" required>
                     </div>
-                    <button type="submit" class="btn btn-glow">💾 บันทึกรายการ</button>
+                    <div class="input-group"
+                        style="flex-direction: row; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <input type="checkbox" id="item-fav" style="width: auto; margin: 0; cursor: pointer;">
+                        <label for="item-fav" style="margin: 0; cursor: pointer;" data-i18n="label_favorite"><i
+                                class="fa-solid fa-star" style="color: var(--accent);"></i> รายการโปรด</label>
+                    </div>
+                    <button type="submit" class="btn btn-glow" data-i18n="btn_save_item"><i
+                            class="fa-solid fa-floppy-disk"></i> บันทึกรายการ</button>
                 </form>
             </div>
         </section>
@@ -153,34 +212,42 @@
             <div class="card slide-in">
                 <div class="history-header">
                     <div>
-                        <h2>ประวัติการซื้อของ 📋</h2>
-                        <p class="subtitle">รายการทั้งหมดที่คุณบันทึกไว้</p>
+                        <h2 data-i18n="history_title">ประวัติการซื้อของ <i class="fa-solid fa-list-ul"></i></h2>
+                        <p class="subtitle" data-i18n="history_subtitle">รายการทั้งหมดที่คุณบันทึกไว้</p>
                     </div>
                     <div class="filter-group" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                        <input type="text" id="search-input" placeholder="🔍 ค้นหาชื่อ..." style="padding:4px 8px; border-radius:6px; border:1px solid var(--border-light); font-family:inherit; font-size:13px; background:var(--input-bg); color:var(--text-main); max-width: 120px;">
+                        <input type="text" id="search-input" placeholder="ค้นหาชื่อ..."
+                            style="padding:4px 8px; border-radius:6px; border:1px solid var(--border-light); font-family:inherit; font-size:13px; background:var(--input-bg); color:var(--text-main); max-width: 120px;">
                         <select id="filter-category">
-                            <option value="all">ทั้งหมด</option>
+                            <option value="all" data-i18n="opt_all">ทั้งหมด</option>
                             <!-- Dynamic Categories -->
                         </select>
-                        <label class="fav-filter-label">
-                            <input type="checkbox" id="filter-fav"> ⭐ รายการโปรดเท่านั้น
+                        <label class="fav-filter-label" data-i18n="filter_fav">
+                            <input type="checkbox" id="filter-fav"> <i class="fa-solid fa-star"
+                                style="color: var(--accent);"></i> รายการโปรดเท่านั้น
                         </label>
                     </div>
                 </div>
 
                 <div class="history-toolbar">
                     <div class="view-mode-toggle">
-                        <button class="view-mode-btn active" id="view-list-btn">📋 รายการ</button>
-                        <button class="view-mode-btn" id="view-group-btn">📂 จัดกลุ่ม</button>
+                        <button class="view-mode-btn active" id="view-list-btn" data-i18n="btn_list"><i
+                                class="fa-solid fa-list"></i> รายการ</button>
+                        <button class="view-mode-btn" id="view-group-btn" data-i18n="btn_group"><i
+                                class="fa-solid fa-folder-open"></i> จัดกลุ่ม</button>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button id="export-csv-btn" style="padding: 7px 12px; border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 10px; background: transparent; color: #10b981; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit;">📥 ส่งออก Excel</button>
-                        <button class="btn-clear-all" id="clear-all-btn">🗑️ ล้างทั้งหมด</button>
+                        <button id="export-csv-btn" data-i18n="btn_export"
+                            style="padding: 7px 12px; border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 10px; background: transparent; color: #10b981; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; display: flex; align-items: center; gap: 6px;"><i
+                                class="fa-solid fa-file-excel"></i>
+                            ส่งออก Excel</button>
+                        <button class="btn-clear-all" id="clear-all-btn" data-i18n="btn_clear_all"><i
+                                class="fa-solid fa-trash-can"></i> ล้างทั้งหมด</button>
                     </div>
                 </div>
 
                 <div class="history-list" id="history-list">
-                    <p class="loading-text">กำลังโหลดข้อมูล...</p>
+                    <p class="loading-text" data-i18n="profile_loading">กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
         </section>
@@ -189,41 +256,43 @@
         <section id="tab-dashboard" class="tab-content">
             <div class="stats-grid slide-in">
                 <div class="stat-card">
-                    <div class="stat-icon">💰</div>
+                    <div class="stat-icon"><i class="fa-solid fa-coins" style="color: var(--accent);"></i></div>
                     <div class="stat-info">
-                        <h3>ยอดรวมเดือนนี้</h3>
+                        <h3 data-i18n="dash_total_month">ยอดรวมเดือนนี้</h3>
                         <p class="stat-value" id="monthly-total">฿0</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">🛒</div>
+                    <div class="stat-icon"><i class="fa-solid fa-cart-shopping" style="color: var(--primary);"></i>
+                    </div>
                     <div class="stat-info">
-                        <h3>จำนวนรายการ</h3>
+                        <h3 data-i18n="dash_item_count">จำนวนรายการ</h3>
                         <p class="stat-value" id="monthly-count">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">⭐</div>
+                    <div class="stat-icon"><i class="fa-solid fa-star" style="color: var(--secondary);"></i></div>
                     <div class="stat-info">
-                        <h3>รายการโปรด</h3>
+                        <h3 data-i18n="dash_fav_count">รายการโปรด</h3>
                         <p class="stat-value" id="fav-count">0</p>
                     </div>
                 </div>
             </div>
             <div class="card slide-in" style="margin-top:20px;">
                 <div class="history-header" style="margin-bottom:12px;">
-                    <h2 style="margin:0;">กราฟค่าใช้จ่าย 📊</h2>
+                    <h2 style="margin:0;" data-i18n="dash_chart_title">กราฟค่าใช้จ่าย <i
+                            class="fa-solid fa-chart-column"></i></h2>
                     <select id="chart-view-mode"
                         style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-family:inherit; font-size:13px; background: var(--input-bg); color: var(--text-main);">
-                        <option value="daily">รายวัน (14 วันล่าสุด)</option>
-                        <option value="monthly">รายเดือน (ปีนี้)</option>
-                        <option value="yearly">รายปี (ย้อนหลัง 5 ปี)</option>
+                        <option value="daily" data-i18n="opt_daily">รายวัน (14 วันล่าสุด)</option>
+                        <option value="monthly" data-i18n="opt_monthly">รายเดือน (ปีนี้)</option>
+                        <option value="yearly" data-i18n="opt_yearly">รายปี (ย้อนหลัง 5 ปี)</option>
                     </select>
                 </div>
                 <div class="chart-container"><canvas id="expenseChart"></canvas></div>
             </div>
             <div class="card slide-in" style="margin-top:20px;">
-                <h2>สัดส่วนหมวดหมู่ 🍩</h2>
+                <h2 data-i18n="dash_category_ratio">สัดส่วนหมวดหมู่ <i class="fa-solid fa-chart-pie"></i></h2>
                 <div class="chart-container" style="height:260px;"><canvas id="categoryChart"></canvas></div>
             </div>
         </section>
@@ -232,79 +301,115 @@
         <section id="tab-profile" class="tab-content">
             <div class="profile-card slide-in">
                 <div class="profile-avatar-wrapper">
-                    <div class="profile-avatar" id="profile-avatar-display">👤</div>
+                    <div class="profile-avatar" id="profile-avatar-display"><i class="fa-solid fa-user"></i></div>
                     <div class="avatar-ring"></div>
+                    <button type="button" class="avatar-add-btn" id="avatar-add-btn" title="เปลี่ยนรูปโปรไฟล์">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <input type="file" id="profile-photo-input" accept="image/*" style="display: none;">
                 </div>
                 <div class="profile-details">
-                    <h2 id="profile-name-display">โหลดข้อมูล...</h2>
+                    <h2 id="profile-name-display" data-i18n="profile_loading">โหลดข้อมูล...</h2>
                     <p id="profile-email-display" style="color:var(--text-muted);font-size:14px;"></p>
                     <p class="profile-since" id="profile-since">สมาชิกตั้งแต่: -</p>
                 </div>
             </div>
 
             <div class="card slide-in" style="margin-top:24px;">
-                <h2>แก้ไขโปรไฟล์ ✏️</h2>
+                <h2 data-i18n="profile_edit_title">แก้ไขโปรไฟล์ <i class="fa-solid fa-pen-to-square"></i></h2>
                 <form id="profile-form">
-                    <div class="input-group">
-                        <label>เลือกอวตาร์</label>
-                        <div class="avatar-grid" id="avatar-grid">
-                            <span class="avatar-option" data-emoji="🐱">🐱</span>
-                            <span class="avatar-option" data-emoji="🐶">🐶</span>
-                            <span class="avatar-option" data-emoji="🐻">🐻</span>
-                            <span class="avatar-option" data-emoji="🦊">🦊</span>
-                            <span class="avatar-option" data-emoji="🐼">🐼</span>
-                            <span class="avatar-option" data-emoji="🐸">🐸</span>
-                            <span class="avatar-option" data-emoji="🦋">🦋</span>
-                            <span class="avatar-option" data-emoji="🌸">🌸</span>
-                            <span class="avatar-option" data-emoji="⭐">⭐</span>
-                            <span class="avatar-option" data-emoji="🎀">🎀</span>
-                            <span class="avatar-option" data-emoji="🍀">🍀</span>
-                            <span class="avatar-option" data-emoji="🎸">🎸</span>
+                    <!-- Photo preview (shown after selecting a file) -->
+                    <div class="photo-change-section" id="photo-change-section" style="display: none;">
+                        <div class="photo-preview-container" id="photo-preview-container">
+                            <img id="photo-preview" src="" class="photo-preview" alt="Preview">
+                            <div class="photo-actions">
+                                <button type="button" id="btn-photo-remove" class="btn-photo-remove">
+                                    <i class="fa-solid fa-trash-can"></i> <span data-i18n="btn_remove_photo">ลบรูปภาพ</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="input-group" style="margin-top:16px;">
-                        <label for="profile-display-name">ชื่อที่แสดง</label>
+                        <label for="profile-display-name" data-i18n="label_display_name">ชื่อที่แสดง</label>
                         <input type="text" id="profile-display-name" placeholder="ชื่อของคุณ">
                     </div>
 
                     <div class="input-group" style="margin-top:16px;">
-                        <label for="theme-select">🎨 เลือกธีม (Theme)</label>
+                        <label for="theme-select" data-i18n="label_choose_theme"><i class="fa-solid fa-palette"></i>
+                            เลือกธีม (Theme)</label>
                         <select id="theme-select">
-                            <option value="light">สว่าง (Light)</option>
-                            <option value="dark">มืด (Dark)</option>
-                            <option value="monokai">Monokai</option>
-                            <option value="cool-blue">Cool Blue</option>
-                            <option value="dark-ocean">Dark Ocean</option>
+                            <option value="light" data-i18n="theme_light">สว่าง (Light)</option>
+                            <option value="dark" data-i18n="theme_dark">มืด (Dark)</option>
+                            <option value="monokai" data-i18n="theme_monokai">Monokai</option>
+                            <option value="cool-blue" data-i18n="theme_cool_blue">Cool Blue</option>
+                            <option value="dark-ocean" data-i18n="theme_dark_ocean">Dark Ocean</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-glow" style="margin-top: 16px;">💾 บันทึกการตั้งค่า</button>
+                    <button type="submit" class="btn btn-glow" style="margin-top: 16px;" data-i18n="btn_save_profile"><i
+                            class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
                 </form>
             </div>
 
-
-
             <div class="card slide-in" style="margin-top:24px;">
-                <h2>จัดการหมวดหมู่ 📂</h2>
-                <p class="subtitle">เพิ่มหรือลบหมวดหมู่ของคุณเอง</p>
+                <h2 data-i18n="cat_manage_title">จัดการหมวดหมู่ <i class="fa-solid fa-folder-open"></i></h2>
+                <p class="subtitle" data-i18n="cat_manage_subtitle">เพิ่มหรือลบหมวดหมู่ของคุณเอง</p>
                 <div style="display: flex; gap: 8px; margin-top: 12px;">
-                    <input type="text" id="new-category-input" placeholder="เช่น 🍿 ขนม" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-light); background: var(--input-bg); color: var(--text-main); font-family: inherit;">
-                    <button id="add-category-btn" class="btn btn-glow" style="width: auto; padding: 0 20px;">เพิ่ม</button>
+                    <input type="text" id="new-category-input" placeholder="เช่น ขนม"
+                        style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-light); background: var(--input-bg); color: var(--text-main); font-family: inherit;">
+                    <button id="add-category-btn" class="btn btn-glow" data-i18n="btn_add"
+                        style="width: auto; padding: 0 20px;">เพิ่ม</button>
                 </div>
-                <div id="category-list-manager" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+                <div id="category-list-manager"
+                    style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
                     <!-- List of categories with delete buttons -->
                 </div>
             </div>
 
-            <div class="card slide-in" style="margin-top:24px; border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.02);">
-                <h2 style="color: var(--danger);">โซนอันตราย ⚠️</h2>
-                <p class="subtitle">จัดการเกี่ยวกับบัญชีของคุณ</p>
-                <button id="logout-btn" class="btn" style="background: var(--danger); color: white; margin-top: 12px; width: 100%;">🚪 ออกจากระบบ</button>
+            <div class="card slide-in" style="margin-top:24px;">
+                <h2 data-i18n="label_choose_theme"><i class="fa-solid fa-globe"></i> ภาษา / Language</h2>
+                <div class="lang-switcher" style="margin-left: 0; margin-top: 12px; display: inline-flex;">
+                    <button class="lang-btn" id="lang-profile-th" onclick="changeLanguage('th')">ภาษาไทย (TH)</button>
+                    <button class="lang-btn" id="lang-profile-en" onclick="changeLanguage('en')">English (EN)</button>
+                </div>
+            </div>
+
+            <div class="card slide-in"
+                style="margin-top:24px; border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.02);">
+                <h2 style="color: var(--danger);" data-i18n="logout_title">Log out <i
+                        class="fa-solid fa-triangle-exclamation"></i></h2>
+                <button id="logout-btn" class="btn"
+                    style="background: var(--danger); color: white; margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                    data-i18n="btn_logout"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
             </div>
         </section>
 
     </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="mobile-nav-item active" data-target="tab-home">
+            <span class="emoji"><i class="fa-solid fa-house"></i></span>
+            <span data-i18n="nav_home">หน้าหลัก</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-target="tab-add">
+            <span class="emoji"><i class="fa-solid fa-circle-plus"></i></span>
+            <span data-i18n="nav_add">เพิ่ม</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-target="tab-history">
+            <span class="emoji"><i class="fa-solid fa-clock-rotate-left"></i></span>
+            <span data-i18n="nav_history">ประวัติ</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-target="tab-dashboard">
+            <span class="emoji"><i class="fa-solid fa-chart-pie"></i></span>
+            <span data-i18n="nav_dashboard">สรุป</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-target="tab-profile">
+            <span class="emoji"><i class="fa-solid fa-user"></i></span>
+            <span data-i18n="nav_profile">โปรไฟล์</span>
+        </a>
+    </div>
 
     <div id="toast" class="toast"></div>
 
@@ -314,6 +419,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
     <script src="firebase-init.js"></script>
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {

@@ -25,7 +25,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
         window.location.href = "index.html";
     } catch (err) {
         console.error("Login error:", err);
-        document.getElementById("login-error").innerText = "❌ เข้าสู่ระบบไม่สำเร็จ: " + (err.message || "เกิดข้อผิดพลาด");
+        document.getElementById("login-error").innerText = translations[currentLang].error_login_failed + (err.message || "error");
     }
 });
 
@@ -37,7 +37,7 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
     const confirm = document.getElementById("reg-confirm").value;
     
     if (password !== confirm) {
-        document.getElementById("register-error").innerText = "❌ รหัสผ่านไม่ตรงกัน";
+        document.getElementById("register-error").innerText = translations[currentLang].error_pass_mismatch;
         return;
     }
     try {
@@ -45,7 +45,7 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
         window.location.href = "index.html";
     } catch (err) {
         console.error("Register error:", err);
-        document.getElementById("register-error").innerText = "❌ สมัครสมาชิกไม่สำเร็จ: " + (err.message || "เกิดข้อผิดพลาด");
+        document.getElementById("register-error").innerText = translations[currentLang].error_register_failed + (err.message || "error");
     }
 });
 
@@ -57,6 +57,6 @@ document.getElementById("google-btn").addEventListener("click", async () => {
         window.location.href = "index.html";
     } catch (err) {
         console.error("Google Sign-In error:", err);
-        document.getElementById("google-error").innerText = "❌ Google Sign-In ไม่สำเร็จ: " + (err.message || "เกิดข้อผิดพลาด");
+        document.getElementById("google-error").innerText = translations[currentLang].error_google_failed + (err.message || "error");
     }
 });
